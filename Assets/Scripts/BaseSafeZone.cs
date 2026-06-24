@@ -8,6 +8,8 @@ public class BaseSafeZone : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
 
+        QuestManager.Instance?.RegisterReturnToBase();
+
         foreach (EnemySpawnZone zone in enemyZones)
         {
             if (zone != null)

@@ -51,7 +51,8 @@ public class PlayerCombat : MonoBehaviour
 
     private void DealDamage()
     {
-        Vector3 attackCenter = transform.position + transform.forward * attackRange;
+        Vector3 offset = new (0, 1, 0);
+        Vector3 attackCenter = transform.position + transform.forward * attackRange + offset;
 
         HitEnemies(attackCenter);
         HitResources(attackCenter);
@@ -104,7 +105,9 @@ public class PlayerCombat : MonoBehaviour
     {
         Gizmos.color = Color.red;
 
-        Vector3 attackCenter = transform.position + transform.forward * attackRange;
+        Vector3 offset = new(0, 1, 0);
+        Vector3 attackCenter = transform.position + transform.forward * attackRange + offset;
+
         Gizmos.DrawWireSphere(attackCenter, attackRadius);
     }
 }

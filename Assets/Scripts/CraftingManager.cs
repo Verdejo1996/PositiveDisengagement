@@ -89,6 +89,8 @@ public class CraftingManager : MonoBehaviour
         if (baseUpgradeManager != null)
             baseUpgradeManager.SetBase(nextUpgrade.prefab, nextUpgrade.level);
 
+        QuestManager.Instance?.RegisterBaseUpgraded(nextUpgrade.level);
+
         Debug.Log("Base upgraded: " + nextUpgrade.upgradeName);
     }
 
@@ -113,6 +115,8 @@ public class CraftingManager : MonoBehaviour
 
         ApplyWeaponUpgrade(currentWeaponIndex);
 
+        QuestManager.Instance?.RegisterWeaponUpgraded(nextUpgrade.level);
+
         Debug.Log("Weapon upgraded: " + nextUpgrade.upgradeName);
     }
 
@@ -136,6 +140,8 @@ public class CraftingManager : MonoBehaviour
         currentShieldIndex = nextIndex;
 
         ApplyShieldUpgrade(currentShieldIndex);
+
+        QuestManager.Instance?.RegisterShieldUpgraded(nextUpgrade.level);
 
         Debug.Log("Shield upgraded: " + nextUpgrade.upgradeName);
     }
@@ -169,6 +175,8 @@ public class CraftingManager : MonoBehaviour
 
         if (playerCombat != null && index < weaponDamages.Length)
             playerCombat.SetDamage(weaponDamages[index]);
+
+        QuestManager.Instance?.RegisterWeaponUpgraded(weaponUpgrade.level);
     }
 
     private void ApplyShieldUpgrade(int index)
@@ -183,5 +191,7 @@ public class CraftingManager : MonoBehaviour
 
         if (playerHealth != null && index < shieldDamageReductions.Length)
             playerHealth.SetDamageReduction(shieldDamageReductions[index]);
+
+
     }
 }

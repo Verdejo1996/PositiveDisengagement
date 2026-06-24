@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -29,6 +30,7 @@ public class EnemyAI : MonoBehaviour
     private Transform player;
     private Vector3 spawnPosition;
     private EnemySpawnZone ownerZone;
+    private EnemyIdentity enemyIdentity;
 
     private NavMeshAgent agent;
     private Animator animator;
@@ -44,6 +46,7 @@ public class EnemyAI : MonoBehaviour
         animator = GetComponentInChildren<Animator>();
         health = GetComponent<Health>();
         enemyLoot = GetComponentInChildren<EnemyLoot>();
+        enemyIdentity = GetComponent<EnemyIdentity>();
     }
 
     public void Initialize(Transform playerTarget, Vector3 originalSpawnPosition, EnemySpawnZone zone)
@@ -189,6 +192,10 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = true;
         SetMoveAnimation(0f);
 
+        if (enemyIdentity != null)
+        {
+            QuestManager.Instance?.RegisterEnemyKilled(enemyIdentity.EnemyId);
+        }
         if (!lootGiven)
         {
             lootGiven = true;
@@ -197,7 +204,14 @@ public class EnemyAI : MonoBehaviour
                 enemyLoot.DropLoot(transform.position);
         }
 
-        ownerZone.DeactivateEnemy(this);
+
+        //ownerZone.DeactivateEnemy(this);
+        Invoke(nameof(DeactivateSelf), 1.5f);
+    }
+
+    private void DeactivateSelf()
+    {
+        this.gameObject.SetActive(false);
     }
 
     private void LookAtPlayer()

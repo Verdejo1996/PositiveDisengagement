@@ -22,6 +22,8 @@ public class PlayerInventory : MonoBehaviour
 
         Debug.Log($"Added {amount} {type}. Total: {resources[type]}");
 
+        QuestManager.Instance?.RegisterResourceCollected(type, amount);
+
         OnInventoryChanged?.Invoke();
     }
 
