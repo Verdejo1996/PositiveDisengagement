@@ -1,7 +1,10 @@
 using UnityEngine;
+using System;
 
 public class CraftingManager : MonoBehaviour
 {
+    public event Action OnCraftingChanged;
+
     [Header("References")]
     [SerializeField] private PlayerInventory playerInventory;
     [SerializeField] private PlayerEquipment playerEquipment;
@@ -91,6 +94,8 @@ public class CraftingManager : MonoBehaviour
 
         QuestManager.Instance?.RegisterBaseUpgraded(nextUpgrade.level);
 
+        NotifyCraftingChanged();
+
         Debug.Log("Base upgraded: " + nextUpgrade.upgradeName);
     }
 
@@ -117,6 +122,8 @@ public class CraftingManager : MonoBehaviour
 
         QuestManager.Instance?.RegisterWeaponUpgraded(nextUpgrade.level);
 
+        NotifyCraftingChanged();
+
         Debug.Log("Weapon upgraded: " + nextUpgrade.upgradeName);
     }
 
@@ -142,6 +149,8 @@ public class CraftingManager : MonoBehaviour
         ApplyShieldUpgrade(currentShieldIndex);
 
         QuestManager.Instance?.RegisterShieldUpgraded(nextUpgrade.level);
+
+        NotifyCraftingChanged();
 
         Debug.Log("Shield upgraded: " + nextUpgrade.upgradeName);
     }
@@ -193,5 +202,42 @@ public class CraftingManager : MonoBehaviour
             playerHealth.SetDamageReduction(shieldDamageReductions[index]);
 
 
+    }
+    public bool CanUpgradeBase()
+    {
+        return CanUpgrade(currentBaseIndex, baseUpgrades);
+    }
+
+    public bool CanUpgradeWeapon()
+    {
+        return CanUpgrade(currentWeaponIndex, weaponUpgrades);
+    }
+
+    public bool CanUpgradeShield()
+    {
+        return CanUpgrade(currentShieldIndex, shieldUpgrades);
+    }
+
+    private bool CanUpgrade(int currentIndex, UpgradeData[] upgrades)
+    {
+        if (playerInventory == null)
+            FindReferencesIfNeeded();
+
+        if (playerInventory == null)
+            return false;
+
+        int nextIndex = currentIndex + 1;
+
+        if (upgrades == null || nextIndex >= upgrades.Length)
+            return false;
+
+        UpgradeData nextUpgrade = upgrades[nextIndex];
+
+        return playerInventory.HasResources(nextUpgrade.costs);
+    }
+
+    private void NotifyCraftingChanged()
+    {
+        OnCraftingChanged?.Invoke();
     }
 }

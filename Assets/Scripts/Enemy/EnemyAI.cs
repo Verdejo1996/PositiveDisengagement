@@ -27,14 +27,17 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private EnemyLoot enemyLoot;
     [SerializeField] private bool lootGiven;
 
+    [Header("Animator")]
+    [SerializeField] private Animator animator;
+
     private Transform player;
     private Vector3 spawnPosition;
     private EnemySpawnZone ownerZone;
     private EnemyIdentity enemyIdentity;
 
     private NavMeshAgent agent;
-    private Animator animator;
     private Health health;
+    private bool experienceGiven;
 
     private EnemyState currentState;
     private float nextAttackTime;
@@ -58,6 +61,7 @@ public class EnemyAI : MonoBehaviour
         currentState = EnemyState.Chasing;
         returnTimer = 0f;
         lootGiven = false;
+        experienceGiven = false;
 
         if (agent != null)
         {
@@ -154,11 +158,22 @@ public class EnemyAI : MonoBehaviour
 
             if (animator != null)
                 animator.SetTrigger("Attack01");
-
-            Health playerHealth = player.GetComponent<Health>();
-
-            if (playerHealth != null)
+                        
+            if (player.TryGetComponent<Health>(out var playerHealth))
                 playerHealth.TakeDamage(damage);
+
+            if(playerHealth.CurrentHealth < 0)
+            {
+                animator.SetTrigger("PlayerDie");
+            }
+        }
+    }
+
+    public void GetHit()
+    {
+        if(animator != null)
+        {
+            animator.SetTrigger("Hit");
         }
     }
 
@@ -192,10 +207,27 @@ public class EnemyAI : MonoBehaviour
         agent.isStopped = true;
         SetMoveAnimation(0f);
 
+        if (animator != null)
+            animator.SetTrigger("Die");
+
+
         if (enemyIdentity != null)
         {
             QuestManager.Instance?.RegisterEnemyKilled(enemyIdentity.EnemyId);
         }
+        if (!experienceGiven)
+        {
+            experienceGiven = true;
+
+            if (enemyLoot != null && player != null)
+            {
+                PlayerExperience playerExperience = player.GetComponent<PlayerExperience>();
+
+                if (playerExperience != null)
+                    playerExperience.AddExperience(enemyLoot.GetExperienceReward());
+            }
+        }
+
         if (!lootGiven)
         {
             lootGiven = true;

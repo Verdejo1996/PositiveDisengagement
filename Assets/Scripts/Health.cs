@@ -121,4 +121,16 @@ public class Health : MonoBehaviour
         if (animator != null)
             animator.SetTrigger("Die");
     }
+
+    public void IncreaseMaxHealth(int amount, bool healToFull)
+    {
+        maxHealth += amount;
+
+        if (healToFull)
+            CurrentHealth = maxHealth;
+        else
+            CurrentHealth = Mathf.Clamp(CurrentHealth, 0, maxHealth);
+
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
+    }
 }

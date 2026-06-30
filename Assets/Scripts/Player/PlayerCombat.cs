@@ -74,10 +74,15 @@ public class PlayerCombat : MonoBehaviour
         foreach (Collider hit in hits)
         {
             Health enemyHealth = hit.GetComponentInParent<Health>();
+            EnemyAI enemyAI = hit.GetComponentInParent<EnemyAI>();
 
             if (enemyHealth != null)
             {
                 enemyHealth.TakeDamage(damage);
+            }
+            if (enemyAI != null)
+            {
+                enemyAI.GetHit();
             }
         }
     }
