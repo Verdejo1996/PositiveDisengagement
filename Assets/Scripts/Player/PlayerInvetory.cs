@@ -57,4 +57,37 @@ public class PlayerInventory : MonoBehaviour
     {
         return resources[type];
     }
+
+    public ResourceCost[] GetAllResourcesAsCosts()
+    {
+        List<ResourceCost> result = new();
+
+        foreach (ResourceType type in System.Enum.GetValues(typeof(ResourceType)))
+        {
+            int amount = GetResourceAmount(type);
+
+            if (amount <= 0)
+                continue;
+
+            ResourceCost cost = new()
+            {
+                resourceType = type,
+                amount = amount
+            };
+
+            result.Add(cost);
+        }
+
+        return result.ToArray();
+    }
+
+    public void ClearAllResources()
+    {
+        foreach (ResourceType type in System.Enum.GetValues(typeof(ResourceType)))
+        {
+            resources[type] = 0;
+        }
+
+        OnInventoryChanged?.Invoke();
+    }
 }
